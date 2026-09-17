@@ -1,0 +1,646 @@
+:root {
+  --color-bg: #EAF6FF;
+  --color-bg-admin: #F5F7FA;
+  --color-card: #FFFFFF;
+  --color-ink: #1F2A44;
+  --color-muted: #6B7B93;
+  --color-border: #D9E6F2;
+  --color-coral: #FF5D73;
+  --color-coral-dark: #E8465D;
+  --color-yellow: #FFC93C;
+  --color-green: #2BB673;
+  --color-purple: #7C6FE0;
+
+  --font-display: 'Baloo 2', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', 'Segoe UI', sans-serif;
+
+  --radius-card: 20px;
+  --radius-control: 10px;
+  --shadow-card: 0 6px 18px rgba(31, 42, 68, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+button, input, select {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  background: var(--color-card);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.topbar__brand {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--color-purple);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.app-main {
+  flex: 1;
+  padding: 32px 28px 64px;
+  max-width: 980px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.page__title {
+  font-size: 2rem;
+  color: var(--color-ink);
+}
+
+.page__subtitle {
+  color: var(--color-muted);
+  margin-bottom: 28px;
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+.muted.small {
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+.error {
+  color: var(--color-coral-dark);
+  font-weight: 600;
+}
+
+.success {
+  color: var(--color-green);
+  font-weight: 600;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--color-purple);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Kid cards grid */
+
+.kid-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.kid-card {
+  background: var(--color-card);
+  border: none;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.kid-card:hover {
+  transform: translateY(-4px);
+}
+
+.kid-card__photo {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--color-yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 6px;
+  border: 4px solid var(--color-bg);
+  box-shadow: 0 0 0 3px var(--color-yellow);
+}
+
+.kid-card__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kid-card__initial {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--color-ink);
+}
+
+.kid-card__name {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.kid-card__age {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.kid-card__points {
+  margin-top: 4px;
+  background: rgba(255, 201, 60, 0.25);
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Trail */
+
+.trail {
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 12px 8px 4px;
+  margin-bottom: 32px;
+}
+
+.trail__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.trail__path {
+  stroke: var(--color-border);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.trail__station-circle {
+  fill: var(--color-card);
+  stroke: var(--color-purple);
+  stroke-width: 4;
+}
+
+.trail__station--done .trail__station-circle {
+  fill: var(--color-green);
+  stroke: var(--color-green);
+}
+
+.trail__station-icon {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  fill: var(--color-purple);
+  pointer-events: none;
+}
+
+.trail__station--done .trail__station-icon {
+  fill: white;
+  font-size: 20px;
+}
+
+.trail__station-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  fill: var(--color-muted);
+  pointer-events: none;
+}
+
+.trail__station {
+  cursor: pointer;
+}
+
+.trail__avatar-ring {
+  fill: var(--color-coral);
+  stroke: white;
+  stroke-width: 4;
+}
+
+.trail__avatar-initial {
+  font-family: var(--font-display);
+  font-size: 20px;
+  fill: white;
+  font-weight: 700;
+}
+
+/* Goal checklists */
+
+.section {
+  margin-bottom: 32px;
+}
+
+.section__title {
+  font-size: 1.3rem;
+  margin-bottom: 14px;
+}
+
+.goal-checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.goal-checklist {
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 18px 20px;
+}
+
+.goal-checklist__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.goal-checklist__percent {
+  font-weight: 700;
+  color: var(--color-purple);
+}
+
+.goal-checklist__description {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  margin: 4px 0 12px;
+}
+
+.progress-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--color-border);
+  overflow: hidden;
+  margin: 10px 0 14px;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: var(--color-green);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-list__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.task-list__item--done .task-list__title {
+  text-decoration: line-through;
+  color: var(--color-muted);
+}
+
+.task-list__title {
+  flex: 1;
+}
+
+.task-list__points {
+  color: var(--color-yellow);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.task-list__empty {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+/* Rewards shelf */
+
+.rewards-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.reward-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-card);
+  border: 2px solid var(--color-border);
+  border-radius: 999px;
+  padding: 10px 16px;
+  opacity: 0.55;
+}
+
+.reward-chip--unlocked {
+  border-color: var(--color-green);
+  opacity: 1;
+}
+
+.reward-chip__icon {
+  font-size: 1.3rem;
+}
+
+.reward-chip__title {
+  font-weight: 600;
+}
+
+.reward-chip__cost {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+/* Auth */
+
+.page--centered {
+  display: flex;
+  justify-content: center;
+  padding-top: 60px;
+}
+
+.auth-card {
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 32px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Forms + admin */
+
+.page--admin {
+  background: var(--color-bg-admin);
+  margin: -32px -28px -64px;
+  padding: 32px 28px 64px;
+  border-radius: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  flex: 1;
+}
+
+.field input,
+.field select {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: 9px 12px;
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+.field--narrow {
+  max-width: 120px;
+}
+
+.button {
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  border-radius: var(--radius-control);
+  padding: 9px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-ink);
+}
+
+.button--primary {
+  background: var(--color-coral);
+  border-color: var(--color-coral);
+  color: white;
+}
+
+.button--primary:hover {
+  background: var(--color-coral-dark);
+}
+
+.button--danger {
+  color: var(--color-coral-dark);
+}
+
+.button--small {
+  padding: 5px 10px;
+  font-size: 0.8rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tabs__button {
+  background: none;
+  border: none;
+  padding: 10px 6px;
+  font-weight: 700;
+  color: var(--color-muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.tabs__button--active {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-coral);
+}
+
+.admin-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-form {
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-form__row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.admin-form__row--tight {
+  align-items: center;
+}
+
+.admin-form__row--tight input {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: 8px 10px;
+}
+
+.admin-form__points-input {
+  max-width: 90px;
+}
+
+.admin-form__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-form__photo-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-list__row {
+  background: var(--color-card);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-card);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-list__photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-weight: 700;
+}
+
+.admin-list__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-list__reward-icon {
+  font-size: 1.4rem;
+}
+
+.admin-list__info {
+  flex: 1;
+}
+
+.admin-list__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-goal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-goal-card {
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 18px 20px;
+}
+
+.admin-goal-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.admin-goal-card__header h4 {
+  margin: 0;
+  flex: 1;
+}
+
+.admin-task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-task-list__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-task-list__title {
+  flex: 1;
+}
+
+.admin-task-list__points {
+  color: var(--color-yellow);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.checkbox {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
