@@ -1,4 +1,4 @@
-data/*.sqlite
+config.php
+data/
 uploads/*
 !uploads/.gitkeep
-!data/.gitkeep
