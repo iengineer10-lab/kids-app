@@ -1,0 +1,13 @@
+﻿body{font-family:Segoe UI,Arial,sans-serif;background:#f0f7ff;margin:0;color:#333}
+nav{background:#4a90e2;padding:12px 20px}nav a{color:#fff;margin-right:20px;text-decoration:none;font-weight:bold}
+main{max-width:960px;margin:20px auto;padding:0 16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px}
+.card{background:#fff;border-radius:16px;box-shadow:0 2px 8px #0002;text-align:center;padding:16px;text-decoration:none;color:inherit;display:block}
+.card:hover{transform:translateY(-3px)}.card img{width:140px;height:140px;border-radius:50%;object-fit:cover}
+.box{background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px #0002}
+.bar{background:#e3e8ee;border-radius:10px;height:16px;overflow:hidden}.bar div{background:#4caf50;height:100%}
+.done{text-decoration:line-through;color:#888}.pts{background:#ffd966;border-radius:10px;padding:2px 8px;font-size:.85em}
+button,input,select{padding:8px;margin:3px;border-radius:8px;border:1px solid #bbb;font:inherit}
+button{background:#4a90e2;color:#fff;border:0;cursor:pointer}button.del{background:#e25c5c}button:disabled{background:#aaa;cursor:not-allowed}
+form.inline{display:inline}.flex{display:flex;gap:20px;align-items:center;flex-wrap:wrap}.flex img{width:100px;height:100px;border-radius:50%;object-fit:cover}
+.big{font-size:1.6em;font-weight:bold;color:#e69500}
