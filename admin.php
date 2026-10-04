@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $pdo->prepare('INSERT INTO kids(name,age,image) VALUES(?,?,?)')->execute([trim($_POST['name']), max(0, (int)$_POST['age']), $img]);
     } elseif ($a === 'goal' && trim($_POST['title']) !== '') {
-        $pdo->prepare('INSERT INTO goals(kid_id,title,daily) VALUES(?,?,?)')->execute([(int)$_POST['kid_id'], trim($_POST['title']), in_array((int)($_POST['repeat'] ?? 0), [1, 2], true) ? (int)$_POST['repeat'] : 0]);
+        $pdo->prepare('INSERT INTO goals(kid_id,title,daily,days) VALUES(?,?,?,?)')->execute([(int)$_POST['kid_id'], trim($_POST['title']), in_array((int)($_POST['repeat'] ?? 0), [1, 2], true) ? (int)$_POST['repeat'] : 0, (int)($_POST['repeat'] ?? 0) === 2 ? parse_days($_POST['days'] ?? []) : '']);
     } elseif ($a === 'task' && trim($_POST['title']) !== '') {
         $pdo->prepare('INSERT INTO tasks(goal_id,title,points) VALUES(?,?,?)')->execute([(int)$_POST['goal_id'], trim($_POST['title']), max(1, (int)$_POST['points'])]);
     } elseif ($a === 'reward' && trim($_POST['title']) !== '') {
@@ -36,11 +36,13 @@ header_html('Parents'); ?>
 <?php foreach ($pdo->query('SELECT * FROM rewards ORDER BY points') as $r) echo '<p>🎁 ' . e($r['title']) . ' <span class="pts">' . (int)$r['points'] . ' ⭐</span> ' . del('rewards', $r['id']) . '</p>'; ?></div>
 <div class="box"><h3>Add goal</h3><form method="post"><?= $c ?><input type="hidden" name="action" value="goal">
 <select name="kid_id" required><?php foreach ($kids as $k) echo '<option value="' . (int)$k['id'] . '">' . e($k['name']) . '</option>'; ?></select>
-<input name="title" placeholder="Goal title" required><select name="repeat"><option value="0">No repeat</option><option value="1">🔁 Every day</option><option value="2">📅 Once a week</option></select><button>Add goal</button></form></div>
+<input name="title" placeholder="Goal title" required><select name="repeat"><option value="0">No repeat</option><option value="1">🔁 Every day</option><option value="2">📅 Weekly (choose days)</option></select>
+<span id="days" style="display:none"><?php foreach (DAY_NAMES as $i => $n) echo '<label><input type="checkbox" name="days[]" value="' . $i . '"> ' . $n . '</label> '; ?></span>
+<script>document.querySelector('select[name=repeat]').onchange = function () { document.getElementById('days').style.display = this.value === '2' ? 'inline' : 'none'; };</script><button>Add goal</button></form></div>
 <?php foreach ($kids as $k):
     $g = $pdo->prepare('SELECT * FROM goals WHERE kid_id=?'); $g->execute([$k['id']]);
     foreach ($g as $goal): ?>
-<div class="box"><h3><?= e($k['name']) ?>: <?= $goal['daily'] ? repeat_label((int)$goal['daily']) . ' ' : '' ?><?= e($goal['title']) ?> <?= del('goals', $goal['id']) ?></h3>
+<div class="box"><h3><?= e($k['name']) ?>: <?= $goal['daily'] ? goal_label($goal) . ' ' : '' ?><?= e($goal['title']) ?> <?= del('goals', $goal['id']) ?></h3>
 <?php $t = $pdo->prepare('SELECT * FROM tasks WHERE goal_id=?'); $t->execute([$goal['id']]);
 foreach ($t as $tk): ?>
 <div class="taskrow"><form method="post" class="taskedit"><?= $c ?><input type="hidden" name="action" value="edit_task"><input type="hidden" name="id" value="<?= (int)$tk['id'] ?>">

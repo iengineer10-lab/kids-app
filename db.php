@@ -22,6 +22,7 @@ function db(): PDO {
         "CREATE TABLE IF NOT EXISTS redemptions(id INT AUTO_INCREMENT PRIMARY KEY, kid_id INT NOT NULL, reward_title VARCHAR(255) NOT NULL, points INT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(kid_id) REFERENCES kids(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
         "CREATE TABLE IF NOT EXISTS daily_log(id INT AUTO_INCREMENT PRIMARY KEY, task_id INT NOT NULL, kid_id INT NOT NULL, day DATE NOT NULL, points INT NOT NULL, UNIQUE KEY task_day(task_id, day), FOREIGN KEY(kid_id) REFERENCES kids(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
     ] as $sql) $pdo->exec($sql);
+    if (!$pdo->query("SHOW COLUMNS FROM goals LIKE 'days'")->fetch()) $pdo->exec("ALTER TABLE goals ADD COLUMN days VARCHAR(20) NOT NULL DEFAULT ''");
     if (!$pdo->query("SHOW COLUMNS FROM goals LIKE 'daily'")->fetch()) $pdo->exec('ALTER TABLE goals ADD COLUMN daily TINYINT NOT NULL DEFAULT 0');
     return $pdo;
 }
@@ -29,6 +30,26 @@ function period_key(int $mode): string {
     $d = new DateTime('today');
     if ($mode === 2) $d->modify('-' . $d->format('w') . ' days');
     return $d->format('Y-m-d');
+}
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+function parse_days($raw): string {
+    $d = array_unique(array_filter(array_map('intval', (array)$raw), fn($x) => $x >= 0 && $x <= 6));
+    sort($d);
+    return implode(',', $d);
+}
+function goal_days(array $g): array { return $g['days'] === '' ? [] : array_map('intval', explode(',', $g['days'])); }
+function goal_active(array $g): bool {
+    $d = goal_days($g);
+    return (int)$g['daily'] !== 2 || !$d || in_array((int)date('w'), $d, true);
+}
+function goal_period(array $g): string {
+    return (int)$g['daily'] === 2 && goal_days($g) ? date('Y-m-d') : period_key((int)$g['daily']);
+}
+function goal_label(array $g): string {
+    $l = repeat_label((int)$g['daily']);
+    $d = goal_days($g);
+    if ((int)$g['daily'] === 2 && $d) $l .= ' (' . implode(', ', array_map(fn($x) => DAY_NAMES[$x], $d)) . ')';
+    return $l;
 }
 function repeat_label(int $mode): string { return [1 => '🔁 Daily', 2 => '📅 Weekly'][$mode] ?? ''; }
 function is_admin(): bool { return !empty($_SESSION['admin']); }
