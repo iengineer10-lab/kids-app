@@ -4,6 +4,7 @@ function db(): PDO {
     static $pdo = null;
     if ($pdo) return $pdo;
     $c = require __DIR__ . '/config.php';
+    date_default_timezone_set($c['timezone'] ?? 'Asia/Riyadh');
     try {
         $pdo = new PDO("mysql:host={$c['host']};dbname={$c['name']};charset=utf8mb4", $c['user'], $c['pass'], [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -15,21 +16,26 @@ function db(): PDO {
     }
     foreach ([
         "CREATE TABLE IF NOT EXISTS kids(id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, age INT NOT NULL, image VARCHAR(255)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
-        "CREATE TABLE IF NOT EXISTS goals(id INT AUTO_INCREMENT PRIMARY KEY, kid_id INT NOT NULL, title VARCHAR(255) NOT NULL, FOREIGN KEY(kid_id) REFERENCES kids(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        "CREATE TABLE IF NOT EXISTS goals(id INT AUTO_INCREMENT PRIMARY KEY, kid_id INT NOT NULL, title VARCHAR(255) NOT NULL, daily TINYINT NOT NULL DEFAULT 0, FOREIGN KEY(kid_id) REFERENCES kids(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
         "CREATE TABLE IF NOT EXISTS tasks(id INT AUTO_INCREMENT PRIMARY KEY, goal_id INT NOT NULL, title VARCHAR(255) NOT NULL, points INT NOT NULL DEFAULT 1, done TINYINT NOT NULL DEFAULT 0, FOREIGN KEY(goal_id) REFERENCES goals(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
         "CREATE TABLE IF NOT EXISTS rewards(id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255) NOT NULL, points INT NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
         "CREATE TABLE IF NOT EXISTS redemptions(id INT AUTO_INCREMENT PRIMARY KEY, kid_id INT NOT NULL, reward_title VARCHAR(255) NOT NULL, points INT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(kid_id) REFERENCES kids(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        "CREATE TABLE IF NOT EXISTS daily_log(id INT AUTO_INCREMENT PRIMARY KEY, task_id INT NOT NULL, kid_id INT NOT NULL, day DATE NOT NULL, points INT NOT NULL, UNIQUE KEY task_day(task_id, day), FOREIGN KEY(kid_id) REFERENCES kids(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
     ] as $sql) $pdo->exec($sql);
+    if (!$pdo->query("SHOW COLUMNS FROM goals LIKE 'daily'")->fetch()) $pdo->exec('ALTER TABLE goals ADD COLUMN daily TINYINT NOT NULL DEFAULT 0');
     return $pdo;
-}function is_admin(): bool { return !empty($_SESSION['admin']); }
+}
+function today(): string { return date('Y-m-d'); }
+function is_admin(): bool { return !empty($_SESSION['admin']); }
 function require_admin(): void {
     if (!is_admin()) { header('Location: login.php'); exit; }
 }
 function e($s): string { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 function balance(int $kid): int {
-    $s = db()->prepare("SELECT COALESCE((SELECT SUM(t.points) FROM tasks t JOIN goals g ON g.id=t.goal_id WHERE g.kid_id=? AND t.done=1),0)
+    $s = db()->prepare("SELECT COALESCE((SELECT SUM(t.points) FROM tasks t JOIN goals g ON g.id=t.goal_id WHERE g.kid_id=? AND g.daily=0 AND t.done=1),0)
+        + COALESCE((SELECT SUM(points) FROM daily_log WHERE kid_id=?),0)
         - COALESCE((SELECT SUM(points) FROM redemptions WHERE kid_id=?),0)");
-    $s->execute([$kid, $kid]);
+    $s->execute([$kid, $kid, $kid]);
     return (int)$s->fetchColumn();
 }
 function csrf(): string { return $_SESSION['csrf'] ??= bin2hex(random_bytes(16)); }
