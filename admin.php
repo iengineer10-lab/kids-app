@@ -11,13 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $pdo->prepare('INSERT INTO kids(name,age,image) VALUES(?,?,?)')->execute([trim($_POST['name']), max(0, (int)$_POST['age']), $img]);
     } elseif ($a === 'goal' && trim($_POST['title']) !== '') {
-        $pdo->prepare('INSERT INTO goals(kid_id,title) VALUES(?,?)')->execute([(int)$_POST['kid_id'], trim($_POST['title'])]);
+        $pdo->prepare('INSERT INTO goals(kid_id,title,daily) VALUES(?,?,?)')->execute([(int)$_POST['kid_id'], trim($_POST['title']), isset($_POST['daily']) ? 1 : 0]);
     } elseif ($a === 'task' && trim($_POST['title']) !== '') {
         $pdo->prepare('INSERT INTO tasks(goal_id,title,points) VALUES(?,?,?)')->execute([(int)$_POST['goal_id'], trim($_POST['title']), max(1, (int)$_POST['points'])]);
     } elseif ($a === 'reward' && trim($_POST['title']) !== '') {
         $pdo->prepare('INSERT INTO rewards(title,points) VALUES(?,?)')->execute([trim($_POST['title']), max(1, (int)$_POST['points'])]);
     } elseif ($a === 'edit_task' && trim($_POST['title']) !== '') {
-        $pdo->prepare('UPDATE tasks SET title=?, points=?, done=? WHERE id=?')->execute([trim($_POST['title']), max(1, (int)$_POST['points']), isset($_POST['done']) ? 1 : 0, (int)$_POST['id']]);
+        $pdo->prepare('UPDATE tasks t JOIN goals g ON g.id=t.goal_id SET t.title=?, t.points=?, t.done=IF(g.daily=1, t.done, ?) WHERE t.id=?')->execute([trim($_POST['title']), max(1, (int)$_POST['points']), isset($_POST['done']) ? 1 : 0, (int)$_POST['id']]);
     } elseif ($a === 'delete' && in_array($_POST['table'], ['kids', 'goals', 'tasks', 'rewards'], true)) {
         $pdo->prepare("DELETE FROM {$_POST['table']} WHERE id=?")->execute([(int)$_POST['id']]);
     }
@@ -36,15 +36,15 @@ header_html('Parents'); ?>
 <?php foreach ($pdo->query('SELECT * FROM rewards ORDER BY points') as $r) echo '<p>🎁 ' . e($r['title']) . ' <span class="pts">' . (int)$r['points'] . ' ⭐</span> ' . del('rewards', $r['id']) . '</p>'; ?></div>
 <div class="box"><h3>Add goal</h3><form method="post"><?= $c ?><input type="hidden" name="action" value="goal">
 <select name="kid_id" required><?php foreach ($kids as $k) echo '<option value="' . (int)$k['id'] . '">' . e($k['name']) . '</option>'; ?></select>
-<input name="title" placeholder="Goal title" required><button>Add goal</button></form></div>
+<input name="title" placeholder="Goal title" required><label><input type="checkbox" name="daily"> 🔁 Repeat every day</label><button>Add goal</button></form></div>
 <?php foreach ($kids as $k):
     $g = $pdo->prepare('SELECT * FROM goals WHERE kid_id=?'); $g->execute([$k['id']]);
     foreach ($g as $goal): ?>
-<div class="box"><h3><?= e($k['name']) ?>: <?= e($goal['title']) ?> <?= del('goals', $goal['id']) ?></h3>
+<div class="box"><h3><?= e($k['name']) ?>: <?= $goal['daily'] ? '🔁 ' : '' ?><?= e($goal['title']) ?> <?= del('goals', $goal['id']) ?></h3>
 <?php $t = $pdo->prepare('SELECT * FROM tasks WHERE goal_id=?'); $t->execute([$goal['id']]);
 foreach ($t as $tk): ?>
 <div class="taskrow"><form method="post" class="taskedit"><?= $c ?><input type="hidden" name="action" value="edit_task"><input type="hidden" name="id" value="<?= (int)$tk['id'] ?>">
-<label title="Done"><input type="checkbox" name="done" <?= $tk['done'] ? 'checked' : '' ?>></label>
+<?php if (!$goal['daily']): ?><label title="Done"><input type="checkbox" name="done" <?= $tk['done'] ? 'checked' : '' ?>></label><?php endif; ?>
 <input name="title" value="<?= e($tk['title']) ?>" required><input name="points" type="number" min="1" value="<?= (int)$tk['points'] ?>" style="width:70px" title="Stars">⭐<button>💾 Save</button></form>
 <?= del('tasks', $tk['id']) ?></div>
 <?php endforeach; ?>
