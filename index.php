@@ -1,4 +1,4 @@
-﻿<?php require 'db.php'; header_html('Kids');
+<?php require 'db.php'; header_html('Kids');
 $kids = db()->query('SELECT * FROM kids ORDER BY name')->fetchAll(); ?>
 <h1>👧👦 Our Kids</h1>
 <?php if (!$kids): ?><div class="empty"><div class="emoji">🧸</div><h2>No kids added yet</h2><p>Add your first kid to get started.</p><a class="btn" href="admin.php">➕ Add a kid</a></div><?php endif; ?>

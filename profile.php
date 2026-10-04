@@ -1,4 +1,4 @@
-﻿<?php require 'db.php';
+<?php require 'db.php';
 $pdo = db(); $id = (int)($_GET['id'] ?? 0);
 $s = $pdo->prepare('SELECT * FROM kids WHERE id=?'); $s->execute([$id]); $kid = $s->fetch();
 if (!$kid) { http_response_code(404); exit('Kid not found'); }

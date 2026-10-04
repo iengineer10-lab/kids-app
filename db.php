@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 function db(): PDO {
     static $pdo = null;
