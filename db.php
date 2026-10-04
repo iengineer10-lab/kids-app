@@ -4,10 +4,15 @@ function db(): PDO {
     static $pdo = null;
     if ($pdo) return $pdo;
     $c = require __DIR__ . '/config.php';
-    $pdo = new PDO("mysql:host={$c['host']};dbname={$c['name']};charset=utf8mb4", $c['user'], $c['pass'], [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
+    try {
+        $pdo = new PDO("mysql:host={$c['host']};dbname={$c['name']};charset=utf8mb4", $c['user'], $c['pass'], [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+    } catch (PDOException $ex) {
+        http_response_code(500);
+        exit('<h2>Database connection failed</h2><p>' . htmlspecialchars($ex->getMessage()) . '</p>');
+    }
     foreach ([
         "CREATE TABLE IF NOT EXISTS kids(id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, age INT NOT NULL, image VARCHAR(255)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
         "CREATE TABLE IF NOT EXISTS goals(id INT AUTO_INCREMENT PRIMARY KEY, kid_id INT NOT NULL, title VARCHAR(255) NOT NULL, FOREIGN KEY(kid_id) REFERENCES kids(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
