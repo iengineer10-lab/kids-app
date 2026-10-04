@@ -25,7 +25,12 @@ function db(): PDO {
     if (!$pdo->query("SHOW COLUMNS FROM goals LIKE 'daily'")->fetch()) $pdo->exec('ALTER TABLE goals ADD COLUMN daily TINYINT NOT NULL DEFAULT 0');
     return $pdo;
 }
-function today(): string { return date('Y-m-d'); }
+function period_key(int $mode): string {
+    $d = new DateTime('today');
+    if ($mode === 2) $d->modify('-' . $d->format('w') . ' days');
+    return $d->format('Y-m-d');
+}
+function repeat_label(int $mode): string { return [1 => '🔁 Daily', 2 => '📅 Weekly'][$mode] ?? ''; }
 function is_admin(): bool { return !empty($_SESSION['admin']); }
 function require_admin(): void {
     if (!is_admin()) { header('Location: login.php'); exit; }
