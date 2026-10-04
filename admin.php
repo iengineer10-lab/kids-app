@@ -32,8 +32,8 @@ header_html('Parents'); ?>
 <input name="name" placeholder="Name" required><input name="age" type="number" min="0" max="18" placeholder="Age" required><input type="file" name="image" accept="image/*"><button>Add</button></form>
 <?php foreach ($kids as $k) echo '<p>' . e($k['name']) . ' (' . (int)$k['age'] . ') ' . del('kids', $k['id']) . '</p>'; ?></div>
 <div class="box"><h3>Add reward</h3><form method="post"><?= $c ?><input type="hidden" name="action" value="reward">
-<input name="title" placeholder="Reward" required><input name="points" type="number" min="1" placeholder="Points needed" required><button>Add</button></form>
-<?php foreach ($pdo->query('SELECT * FROM rewards ORDER BY points') as $r) echo '<p>🎁 ' . e($r['title']) . ' <span class="pts">' . (int)$r['points'] . ' pts</span> ' . del('rewards', $r['id']) . '</p>'; ?></div>
+<input name="title" placeholder="Reward" required><input name="points" type="number" min="1" placeholder="Stars needed" required><button>Add</button></form>
+<?php foreach ($pdo->query('SELECT * FROM rewards ORDER BY points') as $r) echo '<p>🎁 ' . e($r['title']) . ' <span class="pts">' . (int)$r['points'] . ' ⭐</span> ' . del('rewards', $r['id']) . '</p>'; ?></div>
 <div class="box"><h3>Add goal</h3><form method="post"><?= $c ?><input type="hidden" name="action" value="goal">
 <select name="kid_id" required><?php foreach ($kids as $k) echo '<option value="' . (int)$k['id'] . '">' . e($k['name']) . '</option>'; ?></select>
 <input name="title" placeholder="Goal title" required><button>Add goal</button></form></div>
@@ -45,9 +45,9 @@ header_html('Parents'); ?>
 foreach ($t as $tk): ?>
 <div class="taskrow"><form method="post" class="taskedit"><?= $c ?><input type="hidden" name="action" value="edit_task"><input type="hidden" name="id" value="<?= (int)$tk['id'] ?>">
 <label title="Done"><input type="checkbox" name="done" <?= $tk['done'] ? 'checked' : '' ?>></label>
-<input name="title" value="<?= e($tk['title']) ?>" required><input name="points" type="number" min="1" value="<?= (int)$tk['points'] ?>" style="width:70px"><button>💾 Save</button></form>
+<input name="title" value="<?= e($tk['title']) ?>" required><input name="points" type="number" min="1" value="<?= (int)$tk['points'] ?>" style="width:70px" title="Stars">⭐<button>💾 Save</button></form>
 <?= del('tasks', $tk['id']) ?></div>
 <?php endforeach; ?>
 <form method="post"><?= $c ?><input type="hidden" name="action" value="task"><input type="hidden" name="goal_id" value="<?= (int)$goal['id'] ?>">
-<input name="title" placeholder="New task" required><input name="points" type="number" min="1" value="1" style="width:80px"><button>Add task</button></form></div>
+<input name="title" placeholder="New task" required><input name="points" type="number" min="1" value="1" style="width:80px" title="Stars">⭐<button>Add task</button></form></div>
 <?php endforeach; endforeach; footer_html();
