@@ -14,3 +14,4 @@ form.inline{display:inline}.flex{display:flex;gap:20px;align-items:center;flex-w
 
 .empty{text-align:center;background:#fffc;border-radius:20px;padding:40px 20px;box-shadow:0 2px 8px #0002;max-width:460px;margin:40px auto}.empty .emoji{font-size:80px}.btn{display:inline-block;background:#4a90e2;color:#fff;padding:10px 20px;border-radius:10px;text-decoration:none;font-weight:bold}
 
+.taskrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.taskedit{display:flex;align-items:center;gap:4px;flex-wrap:wrap}.taskedit input[type=checkbox]{width:20px;height:20px}

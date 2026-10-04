@@ -16,6 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->prepare('INSERT INTO tasks(goal_id,title,points) VALUES(?,?,?)')->execute([(int)$_POST['goal_id'], trim($_POST['title']), max(1, (int)$_POST['points'])]);
     } elseif ($a === 'reward' && trim($_POST['title']) !== '') {
         $pdo->prepare('INSERT INTO rewards(title,points) VALUES(?,?)')->execute([trim($_POST['title']), max(1, (int)$_POST['points'])]);
+    } elseif ($a === 'edit_task' && trim($_POST['title']) !== '') {
+        $pdo->prepare('UPDATE tasks SET title=?, points=?, done=? WHERE id=?')->execute([trim($_POST['title']), max(1, (int)$_POST['points']), isset($_POST['done']) ? 1 : 0, (int)$_POST['id']]);
     } elseif ($a === 'delete' && in_array($_POST['table'], ['kids', 'goals', 'tasks', 'rewards'], true)) {
         $pdo->prepare("DELETE FROM {$_POST['table']} WHERE id=?")->execute([(int)$_POST['id']]);
     }
@@ -40,7 +42,12 @@ header_html('Parents'); ?>
     foreach ($g as $goal): ?>
 <div class="box"><h3><?= e($k['name']) ?>: <?= e($goal['title']) ?> <?= del('goals', $goal['id']) ?></h3>
 <?php $t = $pdo->prepare('SELECT * FROM tasks WHERE goal_id=?'); $t->execute([$goal['id']]);
-foreach ($t as $tk) echo '<p>' . ($tk['done'] ? '✅' : '⬜') . ' ' . e($tk['title']) . ' <span class="pts">' . (int)$tk['points'] . ' pts</span> ' . del('tasks', $tk['id']) . '</p>'; ?>
+foreach ($t as $tk): ?>
+<div class="taskrow"><form method="post" class="taskedit"><?= $c ?><input type="hidden" name="action" value="edit_task"><input type="hidden" name="id" value="<?= (int)$tk['id'] ?>">
+<label title="Done"><input type="checkbox" name="done" <?= $tk['done'] ? 'checked' : '' ?>></label>
+<input name="title" value="<?= e($tk['title']) ?>" required><input name="points" type="number" min="1" value="<?= (int)$tk['points'] ?>" style="width:70px"><button>💾 Save</button></form>
+<?= del('tasks', $tk['id']) ?></div>
+<?php endforeach; ?>
 <form method="post"><?= $c ?><input type="hidden" name="action" value="task"><input type="hidden" name="goal_id" value="<?= (int)$goal['id'] ?>">
 <input name="title" placeholder="New task" required><input name="points" type="number" min="1" value="1" style="width:80px"><button>Add task</button></form></div>
 <?php endforeach; endforeach; footer_html();
