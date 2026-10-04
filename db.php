@@ -21,7 +21,11 @@ function db(): PDO {
         "CREATE TABLE IF NOT EXISTS redemptions(id INT AUTO_INCREMENT PRIMARY KEY, kid_id INT NOT NULL, reward_title VARCHAR(255) NOT NULL, points INT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(kid_id) REFERENCES kids(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
     ] as $sql) $pdo->exec($sql);
     return $pdo;
-}function e($s): string { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+}function is_admin(): bool { return !empty($_SESSION['admin']); }
+function require_admin(): void {
+    if (!is_admin()) { header('Location: login.php'); exit; }
+}
+function e($s): string { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 function balance(int $kid): int {
     $s = db()->prepare("SELECT COALESCE((SELECT SUM(t.points) FROM tasks t JOIN goals g ON g.id=t.goal_id WHERE g.kid_id=? AND t.done=1),0)
         - COALESCE((SELECT SUM(points) FROM redemptions WHERE kid_id=?),0)");
@@ -36,7 +40,7 @@ function avatar(?string $img): string { return $img ? 'uploads/' . rawurlencode(
 function header_html(string $title): void { ?>
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?= e($title) ?></title><link rel="stylesheet" href="style.css"></head><body>
-<nav><a href="index.php">🏠 Home</a><a href="admin.php">⚙️ Parents</a></nav><main>
+<nav><a href="index.php">🏠 Home</a><a href="admin.php">⚙️ Parents</a><?php if (is_admin()): ?><a href="login.php?logout=1">🚪 Logout</a><?php endif; ?></nav><main>
 <?php }
 function footer_html(): void { echo '</main></body></html>'; }
 

@@ -1,4 +1,4 @@
-<?php require 'db.php';
+<?php require 'db.php'; require_admin();
 $pdo = db();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     check_csrf();
